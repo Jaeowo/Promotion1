@@ -29,7 +29,7 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        
+      
     }
 
 

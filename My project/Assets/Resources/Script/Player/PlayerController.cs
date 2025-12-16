@@ -1,16 +1,34 @@
+using KBCore.Refs;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : ValidatedMonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
+    [Header("References")]
+    [SerializeField, Self] CharacterController controller;
+    [SerializeField, Self] Animator animator;
+    [SerializeField, Anywhere] InputReader input;
 
+    [Header("Settings")]
+    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private float smoothTime = 0.2f;
+
+    private Vector3 movement;
+
+    private void Start()
+    {
+        //animator.Play("Idle");
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
+        HandleMovement();
     }
+
+    void HandleMovement()
+    {
+        movement = new Vector3(input.Direction.x, 0f, 0f);
+        controller.Move(movement * moveSpeed * Time.deltaTime);
+        //animator.Play("Run");
+    }
+
 }

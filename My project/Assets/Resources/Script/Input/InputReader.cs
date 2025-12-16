@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 using static PlayerInputAction;
 
+[CreateAssetMenu(fileName = "InputReader", menuName = "Topdown/Input/InputReader")]
 public class InputReader : ScriptableObject, IPlayerActions
 {
     public event UnityAction<Vector2> Move = delegate { };
@@ -20,6 +21,15 @@ public class InputReader : ScriptableObject, IPlayerActions
             inputAction.Player.SetCallbacks(this);
         }
         inputAction.Enable();
+    }
+
+    void OnDisable()
+    {
+        if (inputAction != null)
+        {
+            inputAction.Player.Disable();
+            inputAction.Disable();
+        }
     }
 
     public void OnMove(InputAction.CallbackContext context)

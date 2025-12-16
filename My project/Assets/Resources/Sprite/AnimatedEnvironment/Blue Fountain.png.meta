@@ -132,6 +132,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -434,7 +460,20 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Blue Fountain_0: -997013398161729623
+      Blue Fountain_1: -6453448650132998079
+      Blue Fountain_10: 780552720849233079
+      Blue Fountain_11: 779402746287268
+      Blue Fountain_12: 5694304749081669589
+      Blue Fountain_2: -879470332764656487
+      Blue Fountain_3: -426146290729435210
+      Blue Fountain_4: -9021600793379262238
+      Blue Fountain_5: -1333083079296455069
+      Blue Fountain_6: 8782169594835926294
+      Blue Fountain_7: 6190224731661089912
+      Blue Fountain_8: 148307743704117756
+      Blue Fountain_9: 5455048129486194708
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

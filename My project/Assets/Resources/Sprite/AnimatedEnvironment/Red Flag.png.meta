@@ -129,6 +129,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -409,7 +435,19 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Red Flag_0: -4180396733399370507
+      Red Flag_1: 5299201009636493622
+      Red Flag_10: -8943328584197021675
+      Red Flag_11: 9043108319821574345
+      Red Flag_2: -7743525560976115834
+      Red Flag_3: -2913092370098542657
+      Red Flag_4: -1481946639439228683
+      Red Flag_5: 4378394402245538357
+      Red Flag_6: 2038100110722498112
+      Red Flag_7: -2665639667837719712
+      Red Flag_8: -983776503223814295
+      Red Flag_9: 1090044646924038702
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

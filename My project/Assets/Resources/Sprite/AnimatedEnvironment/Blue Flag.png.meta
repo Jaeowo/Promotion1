@@ -132,6 +132,32 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -434,7 +460,20 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Blue Flag_0: 6746835922024761970
+      Blue Flag_1: 5881260799245791436
+      Blue Flag_10: -2152289768614787939
+      Blue Flag_11: 6999526432962016308
+      Blue Flag_12: -6856639383629626864
+      Blue Flag_2: 26201708992470652
+      Blue Flag_3: -5402156462561593717
+      Blue Flag_4: -8873805384514914110
+      Blue Flag_5: -3732104076790219446
+      Blue Flag_6: 3925363816672978067
+      Blue Flag_7: 1835733800969652682
+      Blue Flag_8: 8970933079032951488
+      Blue Flag_9: 7724263080419578418
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

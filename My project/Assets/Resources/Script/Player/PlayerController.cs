@@ -18,7 +18,6 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] float jumpForce = 5f;
     [SerializeField] float jumpDuration = 0.5f;
     [SerializeField] float jumpCooldown = 0f;
-    [SerializeField] float jumpMaxHeight = 1f;
     [SerializeField] float gravityMultiplier = 1f;
 
     private const float Zerof = 0f;
@@ -32,15 +31,44 @@ public class PlayerController : ValidatedMonoBehaviour
     CountdownTimer jumpTimer;
     CountdownTimer jumpCooldownTimer;
 
+    StateMachine stateMachine;
+
     private void Awake()
     {
-        // 타이머 셋업
+        SetUpTimer();
+        SetUpStateMachine();
+    }
+
+    private void SetUpTimer()
+    {
         jumpTimer = new CountdownTimer(jumpDuration);
         jumpCooldownTimer = new CountdownTimer(jumpCooldown);
         timers = new List<Timer> { jumpTimer, jumpCooldownTimer };
 
+        jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
         jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
     }
+
+    private void SetUpStateMachine()
+    {
+        stateMachine = new StateMachine();
+
+        // 상태 선언
+        var idleState = new IdleState(this, animator);
+        var jumpState = new JumpState(this, animator);
+
+        // Transition
+        At(idleState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
+        At(jumpState, idleState, new FuncPredicate(() => groundChecker.IsGrounded && !jumpTimer.IsRunning));
+
+        // 초기 상태
+        stateMachine.SetState(idleState);
+    }
+
+    void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
+    void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
+
+
 
     private void Start() => input.EnablePlayerActions();
 
@@ -70,16 +98,18 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         movement = new Vector3(input.Direction.x, 0f, 0f);
 
-        UpdateAnimator();
+        stateMachine.Update();
 
+        UpdateAnimator();
         HandleTimers();
 
     }
 
     void FixedUpdate()
     {
-        HandleJump();
-        HandleMovement();
+        //HandleJump();
+        //HandleMovement();
+        stateMachine.FixedUpdate();
     }
 
 
@@ -96,12 +126,12 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
-    private void HandleMovement()
+    public void HandleMovement()
     {
         rb.linearVelocity = new Vector2(input.Direction.x * moveSpeed, rb.linearVelocity.y);
     }
 
-    private void HandleJump()
+    public void HandleJump()
     {
         if (!jumpTimer.IsRunning && groundChecker.IsGrounded)
         {
@@ -109,20 +139,7 @@ public class PlayerController : ValidatedMonoBehaviour
             return;
         }
 
-        if (jumpTimer.IsRunning)
-        {
-            float launchPoint = 0.9f;
-
-            if (jumpTimer.Progress > launchPoint)
-            {
-                jumpVelocity = Mathf.Sqrt(2f * jumpMaxHeight * Mathf.Abs(Physics2D.gravity.y * rb.gravityScale) );
-            }
-            else
-            {
-                jumpVelocity += (1f - jumpTimer.Progress) * jumpForce * Time.fixedDeltaTime;
-            }
-        }
-        else
+        if (!jumpTimer.IsRunning)
         {
             jumpVelocity += Physics2D.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
         }

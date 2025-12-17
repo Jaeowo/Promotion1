@@ -10,7 +10,6 @@ public class FuncPredicate : IPredicate
         this.func = func;
     }
 
-
     public bool Evaluate() => func.Invoke();
 
 }

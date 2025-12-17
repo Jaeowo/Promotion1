@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class JumpState : BaseState
+public class DashState : BaseState
 {
-    public JumpState(PlayerController player, Animator animator) : base(player, animator) { }
+    public DashState(PlayerController player, Animator animator) : base(player, animator) { }
 
     public override void OnEnter()
     {
-        Debug.Log("JumpState Enter");
-        animator.CrossFade(JumpHash, crossFadeDuration);
+        Debug.Log("DashState Enter");
+        animator.CrossFade(DashHash, crossFadeDuration);
     }
 
     public override void FixedUpdate()

@@ -20,10 +20,10 @@ public class StateMachine : MonoBehaviour
         }
     }
 
-    //public void FixedUpdate()
-    //{
-    //    current.State?.FixedUpdate();
-    //}
+    public void FixedUpdate()
+    {
+        current.State?.FixedUpdate();
+    }
 
     public void SetState(IState state)
     {

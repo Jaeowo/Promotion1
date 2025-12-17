@@ -8,6 +8,7 @@ using static PlayerInputAction;
 public class InputReader : ScriptableObject, IPlayerActions
 {
     public event UnityAction<Vector2> Move = delegate { };
+    public event UnityAction<bool> Jump = delegate { };
 
     PlayerInputAction inputAction;
 
@@ -32,6 +33,11 @@ public class InputReader : ScriptableObject, IPlayerActions
         }
     }
 
+    public void EnablePlayerActions()
+    {
+        inputAction.Enable();
+    }
+
     public void OnMove(InputAction.CallbackContext context)
     {
         Move.Invoke(context.ReadValue<Vector2>());
@@ -39,7 +45,17 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnJump(InputAction.CallbackContext context)
     {
-      
+        switch (context.phase)
+        {
+            case InputActionPhase.Started:
+                Jump.Invoke(true);
+                break;
+            case InputActionPhase.Canceled:
+                Jump.Invoke(false);
+                break;
+            default:
+                break;
+        }
     }
 
 

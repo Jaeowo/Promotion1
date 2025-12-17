@@ -2,23 +2,20 @@ using UnityEngine;
 
 public class GroundChecker : MonoBehaviour
 {
-    [SerializeField] private Transform checkPoint;
-    [SerializeField] private float checkRadius = 0.15f;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] float checkRadius = 0.1f;
+    [SerializeField] Vector3 pivot = Vector3.zero;
+    [SerializeField] LayerMask groundLayers;
 
     public bool IsGrounded { get; private set; }
 
-    void Update()
+    void FixedUpdate()
     {
-        IsGrounded = Physics2D.OverlapCircle(checkPoint.position, checkRadius, groundLayer);
+        IsGrounded = Physics2D.OverlapCircle(transform.position + pivot, checkRadius, groundLayers);
     }
 
     void OnDrawGizmosSelected()
     {
-        if (checkPoint == null) 
-            return;
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(checkPoint.position, checkRadius);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position + pivot, checkRadius);
     }
 }

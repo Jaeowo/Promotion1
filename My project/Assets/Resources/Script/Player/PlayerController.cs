@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerController : ValidatedMonoBehaviour
 {
     [Header("References")]
-    [SerializeField, Self] CharacterController controller;
+    [SerializeField, Self] Rigidbody2D rb;
     [SerializeField, Self] GroundChecker groundChecker;
     [SerializeField, Self] Animator animator;
     [SerializeField, Anywhere] InputReader input;
@@ -15,11 +15,11 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private float moveSpeed = 6f;
 
     [Header("Jump Settings")]
+    [SerializeField] float jumpForce = 5f;
     [SerializeField] float jumpDuration = 0.5f;
     [SerializeField] float jumpCooldown = 0f;
-    [SerializeField] float gravityMultiplier = 3f;
-    [SerializeField] float jumpMaxHeight = 0.1f;
-    [SerializeField] float jumpForce = 2f;
+    [SerializeField] float jumpMaxHeight = 1f;
+    [SerializeField] float gravityMultiplier = 1f;
 
     private const float Zerof = 0f;
 
@@ -74,11 +74,14 @@ public class PlayerController : ValidatedMonoBehaviour
 
         HandleTimers();
 
-        HandleMovement();
-        HandleJump();
-
-
     }
+
+    void FixedUpdate()
+    {
+        HandleJump();
+        HandleMovement();
+    }
+
 
     private void UpdateAnimator()
     {
@@ -95,37 +98,36 @@ public class PlayerController : ValidatedMonoBehaviour
 
     private void HandleMovement()
     {
-        controller.Move(movement * moveSpeed * Time.deltaTime);
+        rb.linearVelocity = new Vector2(input.Direction.x * moveSpeed, rb.linearVelocity.y);
     }
 
     private void HandleJump()
     {
         if (!jumpTimer.IsRunning && groundChecker.IsGrounded)
         {
-            jumpVelocity = Zerof; 
+            jumpVelocity = Zerof;
             return;
         }
 
         if (jumpTimer.IsRunning)
         {
-            float launchPoint = 0.3f;
+            float launchPoint = 0.9f;
 
             if (jumpTimer.Progress > launchPoint)
             {
-                jumpVelocity = Mathf.Sqrt(2f * jumpMaxHeight * Mathf.Abs(Physics.gravity.y));
+                jumpVelocity = Mathf.Sqrt(2f * jumpMaxHeight * Mathf.Abs(Physics2D.gravity.y * rb.gravityScale) );
             }
             else
             {
-                jumpVelocity += (1f - jumpTimer.Progress) * jumpForce * Time.deltaTime;
+                jumpVelocity += (1f - jumpTimer.Progress) * jumpForce * Time.fixedDeltaTime;
             }
         }
         else
         {
-
-            jumpVelocity += Physics.gravity.y * gravityMultiplier * Time.deltaTime;
+            jumpVelocity += Physics2D.gravity.y * gravityMultiplier * Time.fixedDeltaTime;
         }
 
-        controller.Move(Vector3.up * jumpVelocity * Time.deltaTime);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
     }
 
 

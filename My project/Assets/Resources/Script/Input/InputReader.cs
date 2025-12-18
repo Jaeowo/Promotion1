@@ -9,6 +9,7 @@ public class InputReader : ScriptableObject, IPlayerActions
 {
     public event UnityAction<Vector2> Move = delegate { };
     public event UnityAction<bool> Jump = delegate { };
+    public event UnityAction<bool> Dash = delegate { };
 
     PlayerInputAction inputAction;
 
@@ -58,5 +59,19 @@ public class InputReader : ScriptableObject, IPlayerActions
         }
     }
 
+    public void OnDash(InputAction.CallbackContext context)
+    {
+        switch (context.phase)
+        {
+            case InputActionPhase.Started:
+                Dash.Invoke(true);
+                break;
+            case InputActionPhase.Canceled:
+                Dash.Invoke(false);
+                break;
+            default:
+                break;
+        }
+    }
 
 }

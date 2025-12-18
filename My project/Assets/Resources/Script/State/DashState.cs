@@ -12,8 +12,7 @@ public class DashState : BaseState
 
     public override void FixedUpdate()
     {
-        player.HandleJump();
-        player.HandleMovement();
+        player.HandleDash();
     }
 
     public override void Update()

@@ -15,40 +15,51 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private float moveSpeed = 6f;
 
     [Header("Jump Settings")]
-    [SerializeField] float jumpForce = 5f;
-    [SerializeField] float jumpDuration = 0.5f;
-    [SerializeField] float jumpCooldown = 0f;
-    [SerializeField] float gravityMultiplier = 1f;
+    [SerializeField] private float jumpForce = 6f;
+    [SerializeField] private float jumpDuration = 0.3f;
+    [SerializeField] private float jumpCooldown = 0f;
+    [SerializeField] private float gravityMultiplier = 0.5f;
 
-    private const float Zerof = 0f;
+    [Header("Dash Settings")]
+    [SerializeField] private int maxDashCount = 1;
+    [SerializeField] private int currentDashCount = 0;
+    [SerializeField] private float dashCooldown = 30f;
+    [SerializeField] private float dashDuration = 0.2f;
 
-    float velocity;
-    float jumpVelocity;
+    private const float ZeroF = 0f;
+    private Vector3 leftSide = new Vector3(0f, 180f, 0f);
+    private Vector3 rightSide = new Vector3(0f, 0f, 0f);
 
-    private Vector3 movement;
+    private float jumpVelocity;
+    private float dashVelocity;
 
-    List<Timer> timers;
-    CountdownTimer jumpTimer;
-    CountdownTimer jumpCooldownTimer;
 
-    StateMachine stateMachine;
-
+    #region UNITY METHOD
     private void Awake()
     {
         SetUpTimer();
         SetUpStateMachine();
     }
 
-    private void SetUpTimer()
-    {
-        jumpTimer = new CountdownTimer(jumpDuration);
-        jumpCooldownTimer = new CountdownTimer(jumpCooldown);
-        timers = new List<Timer> { jumpTimer, jumpCooldownTimer };
+    private void Start() => input.EnablePlayerActions();
 
-        jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
-        jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
+    private void Update()
+    {
+        stateMachine.Update();
+
+        HandleTimers();
     }
 
+    void FixedUpdate()
+    {
+        stateMachine.FixedUpdate();
+    }
+
+    #endregion
+
+    #region STATE MACHINE
+
+    StateMachine stateMachine;
     private void SetUpStateMachine()
     {
         stateMachine = new StateMachine();
@@ -56,10 +67,14 @@ public class PlayerController : ValidatedMonoBehaviour
         // 상태 선언
         var idleState = new IdleState(this, animator);
         var jumpState = new JumpState(this, animator);
+        var dashState = new DashState(this, animator);
+        var runState = new RunState(this, animator);
 
         // Transition
         At(idleState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
-        At(jumpState, idleState, new FuncPredicate(() => groundChecker.IsGrounded && !jumpTimer.IsRunning));
+        At(idleState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
+        //At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded));
+        Any(idleState, new FuncPredicate(ReturnToLocomotionState));
 
         // 초기 상태
         stateMachine.SetState(idleState);
@@ -68,54 +83,56 @@ public class PlayerController : ValidatedMonoBehaviour
     void At(IState from, IState to, IPredicate condition) => stateMachine.AddTransition(from, to, condition);
     void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
 
-
-
-    private void Start() => input.EnablePlayerActions();
-
-    private void OnEnable()
+    // 모든 상태들이 러닝중이 아닐 때 idle상태로 진입하도록 하기
+    bool ReturnToLocomotionState()
     {
-        input.Jump += OnJump;
+        return groundChecker.IsGrounded
+               && !jumpTimer.IsRunning
+               && !dashTimer.IsRunning;
     }
 
-    private void OnDisable()
-    {
-        input.Jump -= OnJump;
-    }
 
-    private void OnJump(bool performed)
+    #endregion
+
+    #region TIMER
+    List<Timer> timers;
+
+    CountdownTimer jumpTimer;
+    CountdownTimer jumpCooldownTimer;
+
+    CountdownTimer dashTimer;
+    CountdownTimer dashCooldownTimer;
+
+    private void SetUpTimer()
     {
-        if(performed && !jumpTimer.IsRunning && !jumpCooldownTimer.IsRunning && groundChecker.IsGrounded)
+        // Jump
+        jumpTimer = new CountdownTimer(jumpDuration);
+        jumpCooldownTimer = new CountdownTimer(jumpCooldown);
+
+        jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
+        jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
+
+        // Dash
+        dashTimer = new CountdownTimer(dashDuration);
+        dashCooldownTimer = new CountdownTimer(dashCooldown);
+
+        dashTimer.OnTimerStart += () =>
         {
-            jumpTimer.Start();
-        }
-        else if(!performed && jumpTimer.IsRunning)
+            dashVelocity = 2f;
+            currentDashCount++; ;
+        };
+        dashTimer.OnTimerStop += () =>
         {
-            jumpTimer.Stop();
-        }
-    }
+            if (currentDashCount >0)
+            {
+                currentDashCount--;
+            }
 
-    private void Update()
-    {
-        movement = new Vector3(input.Direction.x, 0f, 0f);
+            dashCooldownTimer.Start();
+        };
 
-        stateMachine.Update();
+        timers = new(4) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer };
 
-        UpdateAnimator();
-        HandleTimers();
-
-    }
-
-    void FixedUpdate()
-    {
-        //HandleJump();
-        //HandleMovement();
-        stateMachine.FixedUpdate();
-    }
-
-
-    private void UpdateAnimator()
-    {
-        //animator.SetFloat(Speed, currentSpeed);
     }
 
     private void HandleTimers()
@@ -125,17 +142,64 @@ public class PlayerController : ValidatedMonoBehaviour
             timer.Tick(Time.deltaTime);
         }
     }
+    #endregion
 
+    #region CHECK CONDITION
+    private void OnEnable()
+    {
+        input.Jump += OnJump;
+        input.Dash += OnDash;
+    }
+
+    private void OnDisable()
+    {
+        input.Jump -= OnJump;
+        input.Dash -= OnDash;
+    }
+
+    private void OnJump(bool performed)
+    {
+        if (performed && !jumpTimer.IsRunning && !jumpCooldownTimer.IsRunning && groundChecker.IsGrounded)
+        {
+            jumpTimer.Start();
+        }
+        else if (!performed && jumpTimer.IsRunning)
+        {
+            jumpTimer.Stop();
+        }
+    }
+
+    private void OnDash(bool performed)
+    {
+        if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning && currentDashCount < maxDashCount)
+        {
+            dashTimer.Start();
+        }
+        else if(!performed && dashTimer.IsRunning)
+        {
+            dashTimer.Stop();
+        }
+
+    }
+
+    #endregion
+
+    #region HANDLE STATE
     public void HandleMovement()
     {
-        rb.linearVelocity = new Vector2(input.Direction.x * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = new Vector2(input.Direction.x * moveSpeed , rb.linearVelocity.y);
+    }
+
+    public void HandleDash()
+    {
+        rb.linearVelocity = new Vector2( moveSpeed * dashVelocity, rb.linearVelocity.y);
     }
 
     public void HandleJump()
     {
         if (!jumpTimer.IsRunning && groundChecker.IsGrounded)
         {
-            jumpVelocity = Zerof;
+            jumpVelocity = ZeroF;
             return;
         }
 
@@ -146,6 +210,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
     }
-
+    #endregion
 
 }

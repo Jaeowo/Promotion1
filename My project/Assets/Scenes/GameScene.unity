@@ -1782,7 +1782,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 213398784}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2781,8 +2781,12 @@ MonoBehaviour:
   jumpForce: 2
   jumpDuration: 0.5
   jumpCooldown: 0
-  jumpMaxHeight: 2
   gravityMultiplier: 3
+  dashForce: 1
+  maxDashCount: 1
+  currentDashCount: 0
+  dashCooldown: 3
+  dashDuration: 0.5
 --- !u!114 &665888931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3724,8 +3728,8 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 213398789}
   - {fileID: 2120720216}
+  - {fileID: 213398789}
   - {fileID: 510494724}
   - {fileID: 466457088}
   - {fileID: 1828301379}

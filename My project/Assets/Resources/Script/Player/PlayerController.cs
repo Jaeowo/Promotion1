@@ -21,18 +21,26 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private float gravityMultiplier = 0.5f;
 
     [Header("Dash Settings")]
+    [SerializeField] private float dashForce = 1f;
     [SerializeField] private int maxDashCount = 1;
     [SerializeField] private int currentDashCount = 0;
     [SerializeField] private float dashCooldown = 30f;
     [SerializeField] private float dashDuration = 0.2f;
 
     private const float ZeroF = 0f;
-    private Vector3 leftSide = new Vector3(0f, 180f, 0f);
-    private Vector3 rightSide = new Vector3(0f, 0f, 0f);
 
     private float jumpVelocity;
     private float dashVelocity;
 
+    private enum ePlayerDirection
+    {
+        left,
+        right,
+    }
+    private ePlayerDirection playerDirection = ePlayerDirection.left;
+    //visual.rotation = Quaternion.Euler(0f, yRotation, 0f);
+    //private Quaternion leftDirection = new Quaternion(0f, 180f, 0f);
+    //private Quaternion rightDirection = new Quaternion(0f, 0f, 0f);
 
     #region UNITY METHOD
     private void Awake()
@@ -47,6 +55,7 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         stateMachine.Update();
 
+        CheckPlayerSide();
         HandleTimers();
     }
 
@@ -73,8 +82,9 @@ public class PlayerController : ValidatedMonoBehaviour
         // Transition
         At(idleState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
         At(idleState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
+        At(jumpState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
         //At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded));
-        Any(idleState, new FuncPredicate(ReturnToLocomotionState));
+        Any(idleState, new FuncPredicate(ReturnToIdleState));
 
         // 초기 상태
         stateMachine.SetState(idleState);
@@ -84,7 +94,7 @@ public class PlayerController : ValidatedMonoBehaviour
     void Any(IState to, IPredicate condition) => stateMachine.AddAnyTransition(to, condition);
 
     // 모든 상태들이 러닝중이 아닐 때 idle상태로 진입하도록 하기
-    bool ReturnToLocomotionState()
+    bool ReturnToIdleState()
     {
         return groundChecker.IsGrounded
                && !jumpTimer.IsRunning
@@ -97,6 +107,8 @@ public class PlayerController : ValidatedMonoBehaviour
     #region TIMER
     List<Timer> timers;
 
+    //CountdownTimer runTimer;
+
     CountdownTimer jumpTimer;
     CountdownTimer jumpCooldownTimer;
 
@@ -105,34 +117,11 @@ public class PlayerController : ValidatedMonoBehaviour
 
     private void SetUpTimer()
     {
-        // Jump
-        jumpTimer = new CountdownTimer(jumpDuration);
-        jumpCooldownTimer = new CountdownTimer(jumpCooldown);
-
-        jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
-        jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
-
-        // Dash
-        dashTimer = new CountdownTimer(dashDuration);
-        dashCooldownTimer = new CountdownTimer(dashCooldown);
-
-        dashTimer.OnTimerStart += () =>
-        {
-            dashVelocity = 2f;
-            currentDashCount++; ;
-        };
-        dashTimer.OnTimerStop += () =>
-        {
-            if (currentDashCount >0)
-            {
-                currentDashCount--;
-            }
-
-            dashCooldownTimer.Start();
-        };
+        SetUpRunTimer();
+        SetUpJumpTimer();
+        SetUpDashTiemr();
 
         timers = new(4) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer };
-
     }
 
     private void HandleTimers()
@@ -142,6 +131,40 @@ public class PlayerController : ValidatedMonoBehaviour
             timer.Tick(Time.deltaTime);
         }
     }
+
+    private void SetUpRunTimer()
+    {
+
+    }
+
+    private void SetUpJumpTimer()
+    {
+        jumpTimer = new CountdownTimer(jumpDuration);
+        jumpCooldownTimer = new CountdownTimer(jumpCooldown);
+
+        jumpTimer.OnTimerStart += () => jumpVelocity = jumpForce;
+        jumpTimer.OnTimerStop += () => jumpCooldownTimer.Start();
+    }
+
+    private void SetUpDashTiemr()
+    {
+        dashTimer = new CountdownTimer(dashDuration);
+        dashCooldownTimer = new CountdownTimer(dashCooldown);
+
+        dashTimer.OnTimerStart += () =>
+        {
+            currentDashCount++; ;
+        };
+        dashTimer.OnTimerStop += () =>
+        {
+            if (currentDashCount > 0)
+            {
+                currentDashCount--;
+            }
+
+            dashCooldownTimer.Start();
+        };
+    }
     #endregion
 
     #region CHECK CONDITION
@@ -149,12 +172,37 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         input.Jump += OnJump;
         input.Dash += OnDash;
+        //input.Slash += OnSlash;
     }
 
     private void OnDisable()
     {
         input.Jump -= OnJump;
         input.Dash -= OnDash;
+    }
+
+    private void OnSlash(bool performed)
+    {
+        if(performed)
+        {
+
+        }
+        else if (!performed)
+        {
+
+        }
+    }
+
+    private void OnSkill(bool performed)
+    {
+        if (performed)
+        {
+
+        }
+        else if (!performed)
+        {
+
+        }
     }
 
     private void OnJump(bool performed)
@@ -182,6 +230,27 @@ public class PlayerController : ValidatedMonoBehaviour
 
     }
 
+    private void CheckPlayerSide()
+    {
+        if(input.Direction.x > 0)
+        {
+            playerDirection = ePlayerDirection.right;
+        }
+        else if (input.Direction.x < 0)
+        {
+            playerDirection = ePlayerDirection.left;
+        }
+
+        if (playerDirection == ePlayerDirection.right)
+        {
+            transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+        }
+        else
+        {
+            transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        }
+    }
+
     #endregion
 
     #region HANDLE STATE
@@ -192,7 +261,15 @@ public class PlayerController : ValidatedMonoBehaviour
 
     public void HandleDash()
     {
-        rb.linearVelocity = new Vector2( moveSpeed * dashVelocity, rb.linearVelocity.y);
+        if(playerDirection == ePlayerDirection.right)
+        {
+            rb.linearVelocity = new Vector2(moveSpeed * dashForce, rb.linearVelocity.y);
+        }
+        else
+        {
+            rb.linearVelocity = new Vector2(moveSpeed * -dashForce, rb.linearVelocity.y);
+        }
+     
     }
 
     public void HandleJump()

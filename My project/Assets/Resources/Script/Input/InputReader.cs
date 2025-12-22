@@ -10,7 +10,7 @@ public class InputReader : ScriptableObject, IPlayerActions
     public event UnityAction<Vector2> Move = delegate { };
     public event UnityAction<bool> Jump = delegate { };
     public event UnityAction<bool> Dash = delegate { };
-    public event UnityAction<bool> Slash = delegate { };
+    public event UnityAction Slash = delegate { };
     public event UnityAction<bool> Skill = delegate { };
 
     PlayerInputAction inputAction;
@@ -78,16 +78,9 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnSlash(InputAction.CallbackContext context)
     {
-        switch (context.phase)
+        if (context.phase == InputActionPhase.Started)
         {
-            case InputActionPhase.Started:
-                Slash.Invoke(true);
-                break;
-            case InputActionPhase.Canceled:
-                Slash.Invoke(false);
-                break;
-            default:
-                break;
+            Slash.Invoke();
         }
     }
 

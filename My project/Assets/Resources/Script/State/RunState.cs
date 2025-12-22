@@ -6,13 +6,12 @@ public class RunState : BaseState
 
     public override void OnEnter()
     {
-        Debug.Log("JumpState Enter");
+        Debug.Log("RunState Enter");
         animator.CrossFade(RunHash, crossFadeDuration);
     }
 
     public override void FixedUpdate()
     {
-        player.HandleJump();
         player.HandleMovement();
     }
 
@@ -23,6 +22,6 @@ public class RunState : BaseState
 
     public override void OnExit()
     {
-
+        player.ExitRun();
     }
 }

@@ -1,6 +1,7 @@
 using KBCore.Refs;
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : ValidatedMonoBehaviour
@@ -12,7 +13,8 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField, Anywhere] InputReader input;
 
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 6f;
+    [SerializeField] private float moveSpeed = 3f;
+    //[SerializeField] private bool isRun = false;
 
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 6f;
@@ -26,6 +28,10 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private int currentDashCount = 0;
     [SerializeField] private float dashCooldown = 30f;
     [SerializeField] private float dashDuration = 0.2f;
+
+    [Header("Slash Settings")]
+    [SerializeField] private float attackCooldown = 1.0f;
+    [SerializeField] GameObject slashCollider;
 
     private const float ZeroF = 0f;
 
@@ -78,11 +84,21 @@ public class PlayerController : ValidatedMonoBehaviour
         var jumpState = new JumpState(this, animator);
         var dashState = new DashState(this, animator);
         var runState = new RunState(this, animator);
+        var slashState = new SlashState(this, animator);
 
         // Transition
+        At(runState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
         At(idleState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
+
         At(idleState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
         At(jumpState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
+
+        At(idleState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
+        At(jumpState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
+        At(runState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
+
+        At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded && Mathf.Abs(input.Direction.x) > 0.01f));
+ 
         //At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded));
         Any(idleState, new FuncPredicate(ReturnToIdleState));
 
@@ -98,7 +114,10 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         return groundChecker.IsGrounded
                && !jumpTimer.IsRunning
-               && !dashTimer.IsRunning;
+               && !dashTimer.IsRunning
+               && !slashTimer.IsRunning 
+               && Mathf.Abs(input.Direction.x) <= 0.01f;
+
     }
 
 
@@ -115,13 +134,17 @@ public class PlayerController : ValidatedMonoBehaviour
     CountdownTimer dashTimer;
     CountdownTimer dashCooldownTimer;
 
+    CountdownTimer slashTimer;
+
+    //CountdownTimer runTimer;
+
     private void SetUpTimer()
     {
-        SetUpRunTimer();
         SetUpJumpTimer();
         SetUpDashTiemr();
+        SetUpSlashTiemr();
 
-        timers = new(4) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer };
+        timers = new(5) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, slashTimer };
     }
 
     private void HandleTimers()
@@ -132,9 +155,10 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
-    private void SetUpRunTimer()
-    {
 
+    private void SetUpSlashTiemr()
+    {
+        slashTimer = new CountdownTimer(attackCooldown);
     }
 
     private void SetUpJumpTimer()
@@ -172,24 +196,21 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         input.Jump += OnJump;
         input.Dash += OnDash;
-        //input.Slash += OnSlash;
+        input.Slash += OnSlash;
     }
 
     private void OnDisable()
     {
         input.Jump -= OnJump;
         input.Dash -= OnDash;
+        input.Slash -= OnSlash;
     }
 
-    private void OnSlash(bool performed)
+    private void OnSlash()
     {
-        if(performed)
+        if(!slashTimer.IsRunning)
         {
-
-        }
-        else if (!performed)
-        {
-
+            slashTimer.Start();
         }
     }
 
@@ -227,7 +248,6 @@ public class PlayerController : ValidatedMonoBehaviour
         {
             dashTimer.Stop();
         }
-
     }
 
     private void CheckPlayerSide()
@@ -253,7 +273,18 @@ public class PlayerController : ValidatedMonoBehaviour
 
     #endregion
 
+    // 물리에 따라 State에 Fixed update, Update 나눠서 넣어줄것
     #region HANDLE STATE
+
+    public void HandleSlash()
+    {
+        if(slashCollider && slashTimer.IsRunning)
+        {
+            slashCollider.SetActive(true);
+        }
+
+    }
+
     public void HandleMovement()
     {
         rb.linearVelocity = new Vector2(input.Direction.x * moveSpeed , rb.linearVelocity.y);
@@ -289,4 +320,26 @@ public class PlayerController : ValidatedMonoBehaviour
     }
     #endregion
 
+    #region OnEnter
+
+    #endregion
+
+    #region OnExit
+
+    public void ExitSlash()
+    {
+        if(slashCollider)
+        {
+            slashCollider.SetActive(false);
+        }
+    }
+
+    public void ExitRun()
+    {
+        var v = rb.linearVelocity;
+        v.x = 0f;
+       rb.linearVelocity = v;
+    }
+
+    #endregion
 }

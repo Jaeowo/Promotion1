@@ -13,6 +13,8 @@ public abstract class BaseState : IState
     protected static readonly int DashHash = Animator.StringToHash("Dash");
     protected static readonly int SlashHash = Animator.StringToHash("Slash");
     protected static readonly int SkillHash = Animator.StringToHash("SpecialSkill");
+    protected static readonly int IdleBreakHash = Animator.StringToHash("IdleBreak");
+
 
     protected const float crossFadeDuration = 0.1f;
 

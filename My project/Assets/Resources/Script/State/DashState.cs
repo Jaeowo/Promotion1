@@ -8,6 +8,7 @@ public class DashState : BaseState
     {
         Debug.Log("DashState Enter");
         animator.CrossFade(DashHash, crossFadeDuration);
+        player.LockPlayerDicrection(true);
     }
 
     public override void FixedUpdate()
@@ -22,6 +23,7 @@ public class DashState : BaseState
 
     public override void OnExit()
     {
-
+        player.ExitVelocityXZero();
+        player.LockPlayerDicrection(false);
     }
 }

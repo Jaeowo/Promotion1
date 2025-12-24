@@ -14,7 +14,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 3f;
-    //[SerializeField] private bool isRun = false;
 
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 6f;
@@ -23,11 +22,11 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private float gravityMultiplier = 0.5f;
 
     [Header("Dash Settings")]
-    [SerializeField] private float dashForce = 1f;
+    [SerializeField] private float dashForce = 100f;
     [SerializeField] private int maxDashCount = 1;
     [SerializeField] private int currentDashCount = 0;
     [SerializeField] private float dashCooldown = 30f;
-    [SerializeField] private float dashDuration = 0.2f;
+    [SerializeField] private float dashDuration = 0.5f;
 
     [Header("Slash Settings")]
     [SerializeField] private float attackCooldown = 1.0f;
@@ -36,7 +35,6 @@ public class PlayerController : ValidatedMonoBehaviour
     private const float ZeroF = 0f;
 
     private float jumpVelocity;
-    private float dashVelocity;
 
     private enum ePlayerDirection
     {
@@ -44,9 +42,9 @@ public class PlayerController : ValidatedMonoBehaviour
         right,
     }
     private ePlayerDirection playerDirection = ePlayerDirection.left;
-    //visual.rotation = Quaternion.Euler(0f, yRotation, 0f);
-    //private Quaternion leftDirection = new Quaternion(0f, 180f, 0f);
-    //private Quaternion rightDirection = new Quaternion(0f, 0f, 0f);
+
+    [Header("Etc")]
+    [SerializeField] private bool lockDirection = false;
 
     #region UNITY METHOD
     private void Awake()
@@ -91,7 +89,7 @@ public class PlayerController : ValidatedMonoBehaviour
         At(idleState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
 
         At(idleState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
-        At(jumpState, dashState, new FuncPredicate(() => dashTimer.IsRunning));
+        At(dashState, idleState, new FuncPredicate(() => !dashTimer.IsRunning));
 
         At(idleState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
         At(jumpState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
@@ -99,7 +97,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
         At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded && Mathf.Abs(input.Direction.x) > 0.01f));
  
-        //At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded));
         Any(idleState, new FuncPredicate(ReturnToIdleState));
 
         // 초기 상태
@@ -117,7 +114,6 @@ public class PlayerController : ValidatedMonoBehaviour
                && !dashTimer.IsRunning
                && !slashTimer.IsRunning 
                && Mathf.Abs(input.Direction.x) <= 0.01f;
-
     }
 
 
@@ -125,8 +121,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
     #region TIMER
     List<Timer> timers;
-
-    //CountdownTimer runTimer;
 
     CountdownTimer jumpTimer;
     CountdownTimer jumpCooldownTimer;
@@ -136,15 +130,16 @@ public class PlayerController : ValidatedMonoBehaviour
 
     CountdownTimer slashTimer;
 
-    //CountdownTimer runTimer;
+    StopwatchTimer idleBreakTimer;
 
     private void SetUpTimer()
     {
+        SetUpIdleBreakTimer();
         SetUpJumpTimer();
         SetUpDashTiemr();
         SetUpSlashTiemr();
 
-        timers = new(5) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, slashTimer };
+        timers = new(6) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, slashTimer, idleBreakTimer };
     }
 
     private void HandleTimers()
@@ -155,6 +150,10 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
+    private void SetUpIdleBreakTimer()
+    {
+        idleBreakTimer = new StopwatchTimer();
+    }
 
     private void SetUpSlashTiemr()
     {
@@ -195,15 +194,17 @@ public class PlayerController : ValidatedMonoBehaviour
     private void OnEnable()
     {
         input.Jump += OnJump;
-        input.Dash += OnDash;
         input.Slash += OnSlash;
+        input.Dash += OnDash;
+        input.Skill += OnSkill;
     }
 
     private void OnDisable()
     {
         input.Jump -= OnJump;
-        input.Dash -= OnDash;
         input.Slash -= OnSlash;
+        input.Dash -= OnDash;
+        input.Skill -= OnSkill;
     }
 
     private void OnSlash()
@@ -214,37 +215,30 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
-    private void OnSkill(bool performed)
+    private void OnSkill()
     {
-        if (performed)
-        {
-
-        }
-        else if (!performed)
-        {
-
-        }
+  
     }
 
-    private void OnJump(bool performed)
+    private void OnJump()
     {
-        if (performed && !jumpTimer.IsRunning && !jumpCooldownTimer.IsRunning && groundChecker.IsGrounded)
+        if (!jumpTimer.IsRunning && !jumpCooldownTimer.IsRunning && groundChecker.IsGrounded)
         {
             jumpTimer.Start();
         }
-        else if (!performed && jumpTimer.IsRunning)
+        else if (jumpTimer.IsRunning)
         {
             jumpTimer.Stop();
         }
     }
 
-    private void OnDash(bool performed)
+    private void OnDash()
     {
-        if (performed && !dashTimer.IsRunning && !dashCooldownTimer.IsRunning && currentDashCount < maxDashCount)
+        if (!dashTimer.IsRunning && !dashCooldownTimer.IsRunning && currentDashCount < maxDashCount)
         {
             dashTimer.Start();
         }
-        else if(!performed && dashTimer.IsRunning)
+        else if(dashTimer.IsRunning)
         {
             dashTimer.Stop();
         }
@@ -252,22 +246,25 @@ public class PlayerController : ValidatedMonoBehaviour
 
     private void CheckPlayerSide()
     {
-        if(input.Direction.x > 0)
+        if(!lockDirection)
         {
-            playerDirection = ePlayerDirection.right;
-        }
-        else if (input.Direction.x < 0)
-        {
-            playerDirection = ePlayerDirection.left;
-        }
+            if (input.Direction.x > 0)
+            {
+                playerDirection = ePlayerDirection.right;
+            }
+            else if (input.Direction.x < 0)
+            {
+                playerDirection = ePlayerDirection.left;
+            }
 
-        if (playerDirection == ePlayerDirection.right)
-        {
-            transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
-        }
-        else
-        {
-            transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            if (playerDirection == ePlayerDirection.right)
+            {
+                transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            }
+            else
+            {
+                transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
+            }
         }
     }
 
@@ -282,7 +279,6 @@ public class PlayerController : ValidatedMonoBehaviour
         {
             slashCollider.SetActive(true);
         }
-
     }
 
     public void HandleMovement()
@@ -294,11 +290,11 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         if(playerDirection == ePlayerDirection.right)
         {
-            rb.linearVelocity = new Vector2(moveSpeed * dashForce, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(dashForce, rb.linearVelocity.y);
         }
         else
         {
-            rb.linearVelocity = new Vector2(moveSpeed * -dashForce, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(-dashForce, rb.linearVelocity.y);
         }
      
     }
@@ -318,9 +314,31 @@ public class PlayerController : ValidatedMonoBehaviour
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpVelocity);
     }
+
+    public bool HandleIdleBreakAnimation()
+    {
+        //Debug.Log(idleBreakTimer.GetTime());
+
+        if(idleBreakTimer.GetTime() >= 3.0f)
+        {
+            idleBreakTimer.Reset();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     #endregion
 
     #region OnEnter
+
+    public void EnterIdle()
+    {
+        idleBreakTimer.Reset();
+        idleBreakTimer.Start();
+    }
 
     #endregion
 
@@ -334,12 +352,17 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
-    public void ExitRun()
+    public void ExitVelocityXZero()
     {
         var v = rb.linearVelocity;
-        v.x = 0f;
-       rb.linearVelocity = v;
+        v.x = ZeroF;
+        rb.linearVelocity = v;
     }
 
     #endregion
+
+    public void LockPlayerDicrection(bool lockDirection)
+    {
+        this.lockDirection = lockDirection;
+    }
 }

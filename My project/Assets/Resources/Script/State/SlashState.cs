@@ -8,6 +8,7 @@ public class SlashState : BaseState
     {
         Debug.Log("SlashState Enter");
         animator.CrossFade(SlashHash, crossFadeDuration);
+        player.LockPlayerDicrection(true);
     }
 
     public override void FixedUpdate()
@@ -21,6 +22,7 @@ public class SlashState : BaseState
 
     public override void OnExit()
     {
+        player.LockPlayerDicrection(false);
         player.ExitSlash();
     }
 }

@@ -8,15 +8,19 @@ public class IdleState : BaseState
     {
         Debug.Log("IdleState Enter");
         animator.CrossFade(IdleHash, crossFadeDuration);
+        player.EnterIdle();
     }
 
     public override void FixedUpdate()
     {
-        //player.HandleMovement();
     }
 
     public override void Update()
     {
+        if(player.HandleIdleBreakAnimation())
+        {
+            animator.CrossFade(IdleBreakHash, crossFadeDuration);
+        }
 
     }
 

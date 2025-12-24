@@ -8,10 +8,10 @@ using static PlayerInputAction;
 public class InputReader : ScriptableObject, IPlayerActions
 {
     public event UnityAction<Vector2> Move = delegate { };
-    public event UnityAction<bool> Jump = delegate { };
-    public event UnityAction<bool> Dash = delegate { };
+    public event UnityAction Jump = delegate { };
+    public event UnityAction Dash = delegate { };
     public event UnityAction Slash = delegate { };
-    public event UnityAction<bool> Skill = delegate { };
+    public event UnityAction Skill = delegate { };
 
     PlayerInputAction inputAction;
 
@@ -48,31 +48,19 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnJump(InputAction.CallbackContext context)
     {
-        switch (context.phase)
+        if (context.phase == InputActionPhase.Started)
         {
-            case InputActionPhase.Started:
-                Jump.Invoke(true);
-                break;
-            case InputActionPhase.Canceled:
-                Jump.Invoke(false);
-                break;
-            default:
-                break;
+            Jump.Invoke();
+
         }
     }
 
     public void OnDash(InputAction.CallbackContext context)
     {
-        switch (context.phase)
+        if (context.phase == InputActionPhase.Started)
         {
-            case InputActionPhase.Started:
-                Dash.Invoke(true);
-                break;
-            case InputActionPhase.Canceled:
-                Dash.Invoke(false);
-                break;
-            default:
-                break;
+            Dash.Invoke();
+
         }
     }
 
@@ -86,16 +74,10 @@ public class InputReader : ScriptableObject, IPlayerActions
 
     public void OnSkill(InputAction.CallbackContext context)
     {
-        switch (context.phase)
+        if (context.phase == InputActionPhase.Started)
         {
-            case InputActionPhase.Started:
-                Skill.Invoke(true);
-                break;
-            case InputActionPhase.Canceled:
-                Skill.Invoke(false);
-                break;
-            default:
-                break;
+            Skill.Invoke();
+
         }
     }
 

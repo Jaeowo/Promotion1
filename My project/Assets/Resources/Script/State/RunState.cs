@@ -22,6 +22,6 @@ public class RunState : BaseState
 
     public override void OnExit()
     {
-        player.ExitVelocityXZero();
+        player.VelocityXZero();
     }
 }

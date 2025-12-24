@@ -343,7 +343,7 @@ public class PlayerController : ValidatedMonoBehaviour
 
     #endregion
 
-    #region OnEnter
+    #region ON ENTER
 
     public void EnterIdle()
     {
@@ -353,7 +353,7 @@ public class PlayerController : ValidatedMonoBehaviour
 
     #endregion
 
-    #region OnExit
+    #region ON EXIT
 
     public void ExitSlash()
     {
@@ -363,17 +363,22 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
-    public void ExitVelocityXZero()
+    #endregion
+
+    #region OTHER SETTING
+
+    public void VelocityXZero()
     {
         var v = rb.linearVelocity;
         v.x = ZeroF;
         rb.linearVelocity = v;
     }
 
-    #endregion
-
     public void LockPlayerDicrection(bool lockDirection)
     {
         this.lockDirection = lockDirection;
     }
+
+    #endregion
+
 }

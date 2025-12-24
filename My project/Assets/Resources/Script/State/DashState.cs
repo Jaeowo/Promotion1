@@ -25,7 +25,7 @@ public class DashState : BaseState
 
     public override void OnExit()
     {
-        player.ExitVelocityXZero();
+        player.VelocityXZero();
         player.LockPlayerDicrection(false);
         PlayerStatManager.instance.ChangeInvencible(false);
     }

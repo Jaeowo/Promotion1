@@ -10,7 +10,7 @@ public class DashState : BaseState
         animator.CrossFade(DashHash, crossFadeDuration);
 
         player.LockPlayerDicrection(true);
-        PlayerStatManager.instance.ChangeInvencible(true);
+        //PlayerStatManager.instance.ChangeInvencible(true);
     }
 
     public override void FixedUpdate()
@@ -27,6 +27,6 @@ public class DashState : BaseState
     {
         player.VelocityXZero();
         player.LockPlayerDicrection(false);
-        PlayerStatManager.instance.ChangeInvencible(false);
+        //PlayerStatManager.instance.ChangeInvencible(false);
     }
 }

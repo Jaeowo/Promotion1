@@ -1,37 +1,43 @@
 using UnityEngine;
 
-public class PlayerStatManager : MonoBehaviour
+public abstract class BaseStat : MonoBehaviour
 {
     [Header("Basic Stat")]
-    [SerializeField] private float maxHP = 100f;
-    [SerializeField] private float currentHP = 100f;
-    [SerializeField] private float attack = 3f;
-    [SerializeField] private float defence = 3f;
+    [SerializeField] protected int maxHP = 100;
+    [SerializeField] protected int currentHP = 100;
+    [SerializeField] protected float attack = 3f;
+    [SerializeField] protected float defence = 3f;
 
     [Header("Probability")]
-    [SerializeField] private float criticalProbability = 0.1f;
+    [SerializeField] protected float criticalProbability = 0.1f;
 
     [Header("Multiplier")]
-    [SerializeField] private float skillMultiplier = 1.2f;
-    [SerializeField] private float criticalMultiplier = 1.2f;
+    [SerializeField] protected float skillMultiplier = 1.2f;
+    [SerializeField] protected float criticalMultiplier = 1.2f;
 
     [Header("Bool Set")]
-    [SerializeField] private bool isInvincible = false;
+    [SerializeField] protected bool isInvincible = false;
 
-    public static PlayerStatManager instance;
-
-    private void Awake()
+    protected virtual void Awake()
     {
-        // Singleton Setting
-        if (instance == null)
+        SetDefaultStats();
+        currentHP = maxHP;
+    }
+
+    // 변경하고싶은 스탯은 이쪽에서 구현하기
+    // 굳이 이쪽 변경하지 않더라도 Inspector상에서 변경가능 (코드상으로 변경하고 싶을 때만 사용하자 !)
+    protected virtual void SetDefaultStats() { }
+
+    // 죽음처리는 TakeDamage함수 안에서 보다 각각의 클래스 내부에서 해주는게 좋을듯
+    // Controller안에서 Getter로 받도록... 
+    public virtual void TakeDamage(int damage)
+    {
+        if(isInvincible)
         {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
+            return;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
+
+        DecreaseCurrentHP(damage);
     }
 
     #region Getter
@@ -49,34 +55,34 @@ public class PlayerStatManager : MonoBehaviour
 
     #region BasicStat Setter
 
-    public void IncreaseMaxHP(float value)
+    public void IncreaseMaxHP(int value)
     {
         maxHP += value;
         currentHP += value;
     }
 
-    public void DecreaseMaxHP(float value)
+    public void DecreaseMaxHP(int value)
     {
         maxHP -= value;
-        if (maxHP < 0f)
-            maxHP = 1f;
+        if (maxHP < 0)
+            maxHP = 1;
 
         if (currentHP > maxHP)
             currentHP = maxHP;
     }
 
-    public void IncreaseCurrentHP(float value)
+    public void IncreaseCurrentHP(int value)
     {
         currentHP += value;
         if (currentHP > maxHP)
             currentHP = maxHP;
     }
 
-    public void DecreaseCurrentHP(float value)
+    public void DecreaseCurrentHP(int value)
     {
         currentHP -= value;
-        if (currentHP < 0f)
-            currentHP = 0f;
+        if (currentHP < 0)
+            currentHP = 0;
     }
 
     public void IncreaseATK(float value)
@@ -154,4 +160,5 @@ public class PlayerStatManager : MonoBehaviour
     }
 
     #endregion
+
 }

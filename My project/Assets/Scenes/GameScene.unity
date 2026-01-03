@@ -2736,6 +2736,7 @@ GameObject:
   m_Component:
   - component: {fileID: 665888927}
   - component: {fileID: 665888930}
+  - component: {fileID: 665888934}
   - component: {fileID: 665888931}
   - component: {fileID: 665888926}
   - component: {fileID: 665888929}
@@ -2856,6 +2857,7 @@ MonoBehaviour:
   rb: {fileID: 665888933}
   groundChecker: {fileID: 665888931}
   animator: {fileID: 665888929}
+  stats: {fileID: 665888934}
   input: {fileID: 11400000, guid: a7a047b2b99e9174eb7c3d1129cdec2e, type: 2}
   moveSpeed: 6
   jumpForce: 5
@@ -2951,6 +2953,26 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &665888934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665888924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26c2f9ac85067934993bdced3e717ed0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 100
+  currentHP: 100
+  attack: 10
+  defence: 3
+  criticalProbability: 0.1
+  skillMultiplier: 1.2
+  criticalMultiplier: 1.2
+  isInvincible: 0
 --- !u!1 &731739283
 GameObject:
   m_ObjectHideFlags: 0
@@ -3395,6 +3417,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1223175358}
   - component: {fileID: 1223175357}
+  - component: {fileID: 1223175359}
   m_Layer: 0
   m_Name: SlashCollider
   m_TagString: PlayerAttack
@@ -3463,6 +3486,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 665888927}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1223175359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223175356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 574b45d91fcf495449d972cb1db4b3f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerStat: {fileID: 665888934}
 --- !u!1 &1287910530
 GameObject:
   m_ObjectHideFlags: 0
@@ -3891,14 +3927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6927c63c4e8511b42baa9f8f204f9815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHP: 100
-  currentHP: 100
-  attack: 3
-  defence: 3
-  criticalProbability: 0.1
-  skillMultiplier: 1
-  criticalMultiplier: 1
-  isInvincible: 0
 --- !u!4 &1857243992
 Transform:
   m_ObjectHideFlags: 0
@@ -4099,6 +4127,7 @@ GameObject:
   - component: {fileID: 2141034083}
   - component: {fileID: 2141034082}
   - component: {fileID: 2141034084}
+  - component: {fileID: 2141034085}
   m_Layer: 0
   m_Name: Enemy1
   m_TagString: Enemy
@@ -4213,6 +4242,26 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1.3125, y: 1.75}
   m_Direction: 0
+--- !u!114 &2141034085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2141034081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ff263deaf129d41857d09b3d4d3909, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 100
+  currentHP: 100
+  attack: 3
+  defence: 1
+  criticalProbability: 0.1
+  skillMultiplier: 1.2
+  criticalMultiplier: 1.2
+  isInvincible: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

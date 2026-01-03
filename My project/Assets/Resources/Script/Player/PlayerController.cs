@@ -7,10 +7,11 @@ using UnityEngine;
 public class PlayerController : ValidatedMonoBehaviour
 {
     [Header("References")]
-    [SerializeField, Self] Rigidbody2D rb;
-    [SerializeField, Self] GroundChecker groundChecker;
-    [SerializeField, Self] Animator animator;
-    [SerializeField, Anywhere] InputReader input;
+    [SerializeField, Self] private Rigidbody2D rb;
+    [SerializeField, Self] private GroundChecker groundChecker;
+    [SerializeField, Self] private Animator animator;
+    [SerializeField, Self] private PlayerStat stats;
+    [SerializeField, Anywhere] private InputReader input;
 
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 3f;
@@ -115,7 +116,6 @@ public class PlayerController : ValidatedMonoBehaviour
                && !slashTimer.IsRunning 
                && Mathf.Abs(input.Direction.x) <= 0.01f;
     }
-
 
     #endregion
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
 
-public class StateMachine : MonoBehaviour
+public class StateMachine 
 {
     StateNode current;
     Dictionary<Type, StateNode> nodes = new();

@@ -2,15 +2,13 @@ using UnityEngine;
 
 public class SlashColliderManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    //[SerializeField] PlayerCombat owner;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    //private void OnTriggerEnter2D(Collider2D collision)
+    //{
+    //    if (!collision.TryGetComponent<ICombatEntity>(out var target))
+    //        return;
+
+    //    AttackManager.instance.Attack(owner, target);
+    //}
 }

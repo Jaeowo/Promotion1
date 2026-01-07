@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public abstract class BaseStat : MonoBehaviour
@@ -17,6 +18,9 @@ public abstract class BaseStat : MonoBehaviour
 
     [Header("Bool Set")]
     [SerializeField] protected bool isInvincible = false;
+
+    // Event
+    public event Action<float, float> OnHPChanged;
 
     protected virtual void Awake()
     {
@@ -59,6 +63,8 @@ public abstract class BaseStat : MonoBehaviour
     {
         maxHP += value;
         currentHP += value;
+
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
     }
 
     public void DecreaseMaxHP(int value)
@@ -69,6 +75,8 @@ public abstract class BaseStat : MonoBehaviour
 
         if (currentHP > maxHP)
             currentHP = maxHP;
+
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
     }
 
     public void IncreaseCurrentHP(int value)
@@ -76,6 +84,8 @@ public abstract class BaseStat : MonoBehaviour
         currentHP += value;
         if (currentHP > maxHP)
             currentHP = maxHP;
+
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
     }
 
     public void DecreaseCurrentHP(int value)
@@ -83,6 +93,8 @@ public abstract class BaseStat : MonoBehaviour
         currentHP -= value;
         if (currentHP < 0)
             currentHP = 0;
+
+        OnHPChanged?.Invoke(CurrentHP, MaxHP);
     }
 
     public void IncreaseATK(float value)

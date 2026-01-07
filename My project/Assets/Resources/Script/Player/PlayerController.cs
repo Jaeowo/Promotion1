@@ -30,8 +30,14 @@ public class PlayerController : ValidatedMonoBehaviour
     [SerializeField] private float dashDuration = 0.5f;
 
     [Header("Slash Settings")]
-    [SerializeField] private float attackCooldown = 1.0f;
+    [SerializeField] private float attackCooldown = 0.5f;
     [SerializeField] GameObject slashCollider;
+
+    [Header("Death Settings")]
+    [SerializeField] private bool isDeath = false;
+
+    [Header("Hit Settings")]
+    [SerializeField] private float hitDuration = 0.2f;
 
     private const float ZeroF = 0f;
 
@@ -61,7 +67,13 @@ public class PlayerController : ValidatedMonoBehaviour
         stateMachine.Update();
 
         CheckPlayerSide();
+        CheckDeath();
         HandleTimers();
+
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            stats.DecreaseCurrentHP(200);
+        }
     }
 
     void FixedUpdate()
@@ -84,6 +96,8 @@ public class PlayerController : ValidatedMonoBehaviour
         var dashState = new DashState(this, animator);
         var runState = new RunState(this, animator);
         var slashState = new SlashState(this, animator);
+        var deathState = new DeathState(this, animator);
+        var hitState = new HitState(this, animator);
 
         // Transition
         At(runState, jumpState, new FuncPredicate(() => jumpTimer.IsRunning));
@@ -97,9 +111,10 @@ public class PlayerController : ValidatedMonoBehaviour
         At(runState, slashState, new FuncPredicate(() => slashTimer.IsRunning));
 
         At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded && Mathf.Abs(input.Direction.x) > 0.01f));
- 
-        Any(idleState, new FuncPredicate(ReturnToIdleState));
 
+        Any(deathState, new FuncPredicate(() => isDeath == true));
+        Any(idleState, new FuncPredicate(ReturnToIdleState));
+  
         // 초기 상태
         stateMachine.SetState(idleState);
     }
@@ -276,6 +291,14 @@ public class PlayerController : ValidatedMonoBehaviour
         }
     }
 
+    private void CheckDeath()
+    {
+        if (stats.CurrentHP <= 0)
+        {
+            isDeath = true;
+        }
+    }
+
     #endregion
 
     #region HANDLE STATE (Update)
@@ -290,8 +313,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
     public bool HandleIdleBreakAnimation()
     {
-        //Debug.Log(idleBreakTimer.GetTime());
-
         if (idleBreakTimer.GetTime() >= 3.0f)
         {
             idleBreakTimer.Reset();

@@ -12,6 +12,7 @@ public class SlashColliderAttack : MonoBehaviour
             {
                 int damage = Calculator.ExecuteAttack(playerStat, targetStat);
                 targetStat.TakeDamage(damage);
+                UIInitManager.instance.InitDamageText(targetStat.transform.position, damage);
                 Debug.Log(damage);
             }
         }

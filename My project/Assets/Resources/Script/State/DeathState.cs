@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DeathState : BaseState
+public class DeathState : PlayerBaseState
 {
     public DeathState(PlayerController player, Animator animator) : base(player, animator) { }
 

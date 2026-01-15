@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class DashState : BaseState
+public class DashState : PlayerBaseState
 {
     public DashState(PlayerController player, Animator animator) : base(player, animator) { }
 

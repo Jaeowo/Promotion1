@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SlashState : BaseState
+public class SlashState : PlayerBaseState
 {
     public SlashState(PlayerController player, Animator animator) : base(player, animator) { }
 

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class IdleState : BaseState
+public class IdleState : PlayerBaseState
 {
     public IdleState(PlayerController player, Animator animator) : base(player, animator) { }
 

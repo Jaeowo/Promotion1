@@ -1,12 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
+using System.Net;
 using UnityEngine;
 using UnityEngine.AI;
+using static Node;
 
 public interface IStrategy
 {
-    Node.Status Process();
+    Node.EStatus Process();
 
     void Reset()
     {
@@ -23,10 +25,10 @@ public class ActionStrategy : IStrategy
         this.doSomething = doSomething;
     }
 
-    public Node.Status Process()
+    public Node.EStatus Process()
     {
         doSomething();
-        return Node.Status.Success;
+        return Node.EStatus.Success;
     }
 }
 
@@ -39,81 +41,47 @@ public class Condition : IStrategy
         this.predicate = predicate;
     }
 
-    public Node.Status Process() => predicate() ? Node.Status.Success : Node.Status.Failure;
+    public Node.EStatus Process() => predicate() ? Node.EStatus.Success : Node.EStatus.Failure;
 }
 
-public class PatrolStrategy : IStrategy
-{
-    readonly Transform entity;
-    readonly NavMeshAgent agent;
-    readonly List<Transform> patrolPoints;
-    readonly float patrolSpeed;
-    int currentIndex;
-    bool isPathCalculated;
+//public class PatrolStrategy : IStrategy
+//{
+//    readonly Transform entity;
+//    readonly NavMeshAgent agent;
+//    readonly List<Transform> patrolPoints;
+//    readonly float patrolSpeed;
+//    int currentIndex;
+//    bool isPathCalculated;
 
-    public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 2f)
-    {
-        this.entity = entity;
-        this.agent = agent;
-        this.patrolPoints = patrolPoints;
-        this.patrolSpeed = patrolSpeed;
-    }
+//    public PatrolStrategy(Transform entity, NavMeshAgent agent, List<Transform> patrolPoints, float patrolSpeed = 2f)
+//    {
+//        this.entity = entity;
+//        this.agent = agent;
+//        this.patrolPoints = patrolPoints;
+//        this.patrolSpeed = patrolSpeed;
+//    }
 
-    public Node.Status Process()
-    {
-        if (currentIndex == patrolPoints.Count) return Node.Status.Success;
+//    public Node.EStatus Process()
+//    {
+//        if (currentIndex == patrolPoints.Count) return Node.EStatus.Success;
 
-        var target = patrolPoints[currentIndex];
-        agent.SetDestination(target.position);
-        entity.LookAt(target.position.With(y: entity.position.y));
+//        var target = patrolPoints[currentIndex];
+//        agent.SetDestination(target.position);
+//        //entity.LookAt(target.position.With(y: entity.position.y));
 
-        if (isPathCalculated && agent.remainingDistance < 0.1f)
-        {
-            currentIndex++;
-            isPathCalculated = false;
-        }
+//        if (isPathCalculated && agent.remainingDistance < 0.1f)
+//        {
+//            currentIndex++;
+//            isPathCalculated = false;
+//        }
 
-        if (agent.pathPending)
-        {
-            isPathCalculated = true;
-        }
+//        if (agent.pathPending)
+//        {
+//            isPathCalculated = true;
+//        }
 
-        return Node.Status.Running;
-    }
+//        return Node.EStatus.Running;
+//    }
 
-    public void Reset() => currentIndex = 0;
-}
-
-public class MoveToTarget : IStrategy
-{
-    readonly Transform entity;
-    readonly NavMeshAgent agent;
-    readonly Transform target;
-    bool isPathCalculated;
-
-    public MoveToTarget(Transform entity, NavMeshAgent agent, Transform target)
-    {
-        this.entity = entity;
-        this.agent = agent;
-        this.target = target;
-    }
-
-    public Node.Status Process()
-    {
-        if (Vector3.Distance(entity.position, target.position) < 1f)
-        {
-            return Node.Status.Success;
-        }
-
-        agent.SetDestination(target.position);
-        entity.LookAt(target.position.With(y: entity.position.y));
-
-        if (agent.pathPending)
-        {
-            isPathCalculated = true;
-        }
-        return Node.Status.Running;
-    }
-
-    public void Reset() => isPathCalculated = false;
-}
+//    public void Reset() => currentIndex = 0;
+//}

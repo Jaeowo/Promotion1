@@ -17,7 +17,6 @@ public static class Calculator
             return 0;
         }
 
-
         float minDamage = attacker.ATK * (1f - DamageVariance);
         float maxDamage = attacker.ATK * (1f + DamageVariance);
         float randomDamage = Random.Range(minDamage, maxDamage);
@@ -49,5 +48,10 @@ public static class Calculator
         return roundDamage;
         //defender.TakeDamage(roundDamage);
    }
+
+    public static bool DisitanceCaluculator()
+    {
+        return true;
+    }
 
 }

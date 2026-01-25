@@ -36,7 +36,7 @@ public abstract class BaseStat : MonoBehaviour
     // Controller안에서 Getter로 받도록... 
     public virtual void TakeDamage(int damage)
     {
-        if(isInvincible)
+        if (isInvincible)
         {
             return;
         }

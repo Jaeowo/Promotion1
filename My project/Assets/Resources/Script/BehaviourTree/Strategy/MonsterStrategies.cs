@@ -1,3 +1,4 @@
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 using static UnityEngine.GraphicsBuffer;
@@ -21,7 +22,14 @@ public class MoveToTarget : IStrategy
     public Node.EStatus Process()
     {
         float distanceX = Mathf.Abs(entity.position.x - target.position.x);
+        float distanceY = Mathf.Abs(entity.position.y - target.position.y);
+
         float directionX = target.position.x - entity.position.x;
+
+        if (distanceY >= 1.5f)
+        {
+            return Node.EStatus.Failure;
+        }
 
         if (directionX <= 0)
         {
@@ -40,7 +48,7 @@ public class MoveToTarget : IStrategy
         Vector3 finalPosition = new Vector3(directionX * moveSpeed * Time.deltaTime, 0f, 0f);
         entity.position += new Vector3(finalPosition.x, 0f, 0f);
 
-        return Node.EStatus.Running;
+        return Node.EStatus.Success;
     }
 }
 
@@ -118,6 +126,25 @@ public class ChangeAnimation : IStrategy
         animator.CrossFade(animName, conversionTime);
         currentAnimName = animName;
         return Node.EStatus.Success;
+    }
+}
+
+public class Death : IStrategy
+{
+    private GameObject owner;
+    private GameObject hurtCollider;
+
+    public Death(GameObject owner, GameObject hurtCollider)
+    {
+        this.owner = owner;
+        this.hurtCollider = hurtCollider;
+    }
+
+    public Node.EStatus Process()
+    {
+        hurtCollider.SetActive(false);
+        Object.Destroy(owner, 2f);
+        return Node.EStatus.Running;
     }
 }
 

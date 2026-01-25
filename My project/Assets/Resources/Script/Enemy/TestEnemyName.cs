@@ -4,22 +4,27 @@ public class TestEnemyName : MonoBehaviour
 {
     private BehaviourTree tree;
     private Animator animator;
+    private BaseStat stat;
+
+    [SerializeField] private GameObject hurtCollider;
 
     public GameObject player;
 
     public LayerMask groundMask;
 
     private const float cliffMaxDistnace = 0.5f;
-    private float checkOffsetX = 0.8f;
-    private float checkOffsetY = 0.5f; 
+    //private float checkOffsetX = 0.8f;
+    //private float checkOffsetY = 0.5f; 
     private const float moveSpeed = 1.0f;
-    private float detectDistance = 5f;
+    private float detectDistance = 7f;
 
-
+    #region Unity method
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        if(!player)
+        stat = GetComponent<BaseStat>();
+
+        if (!player)
         {
             player = GameObject.Find("Player");
         }
@@ -27,27 +32,7 @@ public class TestEnemyName : MonoBehaviour
 
     private void Start()
     {
-        tree = new BehaviourTree("Name");
-
-        PrioritySelector NameSelector = new PrioritySelector("NameSelector");
-
-        Sequence idleSQ = new Sequence("Idle", 3);
-        idleSQ.AddChild(new Leaf("IsCliff?", new Condition(() => !IsSafeToMove())));
-        idleSQ.AddChild(new Leaf("Idle", new Idle(transform)));
-
-        Sequence walkToPlayerSQ = new Sequence("Move", 2);
-        walkToPlayerSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
-        walkToPlayerSQ.AddChild(new Leaf("IsPlayerInRange?", new Condition(IsPlayerInRange)));
-        walkToPlayerSQ.AddChild(new Leaf("MoveToPlayer", new MoveToTarget(transform, player.transform, moveSpeed, 2f)));
-        NameSelector.AddChild(walkToPlayerSQ);
-
-        Sequence patrolSQ = new Sequence("Patrol", 1);
-        patrolSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
-        patrolSQ.AddChild(new Leaf("PatrolMove", new Patrol(transform, 8f, moveSpeed)));
-        NameSelector.AddChild(patrolSQ);
-
-        tree.AddChild(NameSelector);
-
+        TreeSetting();
     }
 
     private void Update()
@@ -55,8 +40,37 @@ public class TestEnemyName : MonoBehaviour
         tree.Process();
     }
 
+    private void TreeSetting()
+    {
+        tree = new BehaviourTree("Name");
 
-    #region CONDITION_CHECK
+        PrioritySelector NameSelector = new PrioritySelector("NameSelector");
+
+        Sequence deathSQ = new Sequence("Death", 100);
+        deathSQ.AddChild(new Leaf("IsDeath?", new Condition(IsDeath)));
+        deathSQ.AddChild(new Leaf("Death", new Death(gameObject, hurtCollider)));
+        NameSelector.AddChild(deathSQ);
+
+        Sequence walkToPlayerSQ = new Sequence("Move", 10);
+        walkToPlayerSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
+        walkToPlayerSQ.AddChild(new Leaf("IsPlayerInRange?", new Condition(IsPlayerInRange)));
+        walkToPlayerSQ.AddChild(new Leaf("MoveToPlayer", new MoveToTarget(transform, player.transform, moveSpeed, 2f)));
+        NameSelector.AddChild(walkToPlayerSQ);
+
+        Sequence patrolSQ = new Sequence("Patrol", 5);
+        patrolSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
+        patrolSQ.AddChild(new Leaf("PatrolMove", new Patrol(transform, 8f, moveSpeed)));
+        NameSelector.AddChild(patrolSQ);
+
+        Sequence idleSQ = new Sequence("Idle", 1);
+        idleSQ.AddChild(new Leaf("IsCliff?", new Condition(() => !IsSafeToMove())));
+        idleSQ.AddChild(new Leaf("Idle", new Idle(transform)));
+
+        tree.AddChild(NameSelector);
+    }
+    #endregion
+
+    #region Condition Checker
     private bool IsSafeToMove()
     {
 
@@ -90,5 +104,20 @@ public class TestEnemyName : MonoBehaviour
         return distance <= detectDistance;
     }
 
+    private bool IsDeath()
+    {
+        Debug.Log("Monster Death");
+        if(stat.CurrentHP <=0f)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     #endregion
+
+
 }

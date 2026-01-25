@@ -15,7 +15,7 @@ public class TestEnemyName : MonoBehaviour
     private const float cliffMaxDistnace = 0.5f;
     //private float checkOffsetX = 0.8f;
     //private float checkOffsetY = 0.5f; 
-    private const float moveSpeed = 1.0f;
+    private const float moveSpeed = 2.0f;
     private float detectDistance = 7f;
 
     #region Unity method
@@ -106,7 +106,6 @@ public class TestEnemyName : MonoBehaviour
 
     private bool IsDeath()
     {
-        Debug.Log("Monster Death");
         if(stat.CurrentHP <=0f)
         {
             return true;

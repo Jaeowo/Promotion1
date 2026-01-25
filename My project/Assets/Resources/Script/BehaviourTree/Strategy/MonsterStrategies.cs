@@ -134,16 +134,19 @@ public class Death : IStrategy
     private GameObject owner;
     private GameObject hurtCollider;
 
-    public Death(GameObject owner, GameObject hurtCollider)
+    private float deathTime;
+
+    public Death(GameObject owner, GameObject hurtCollider, float deathTime = 2f)
     {
         this.owner = owner;
         this.hurtCollider = hurtCollider;
+        this.deathTime = deathTime;
     }
 
     public Node.EStatus Process()
     {
         hurtCollider.SetActive(false);
-        Object.Destroy(owner, 2f);
+        Object.Destroy(owner, deathTime);
         return Node.EStatus.Running;
     }
 }

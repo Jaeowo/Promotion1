@@ -13,8 +13,6 @@ public class TestEnemyName : MonoBehaviour
     public LayerMask groundMask;
 
     private const float cliffMaxDistnace = 0.5f;
-    //private float checkOffsetX = 0.8f;
-    //private float checkOffsetY = 0.5f; 
     private const float moveSpeed = 2.0f;
     private float detectDistance = 7f;
 
@@ -48,22 +46,32 @@ public class TestEnemyName : MonoBehaviour
 
         Sequence deathSQ = new Sequence("Death", 100);
         deathSQ.AddChild(new Leaf("IsDeath?", new Condition(IsDeath)));
-        deathSQ.AddChild(new Leaf("Death", new Death(gameObject, hurtCollider)));
+        deathSQ.AddChild(new Leaf("Death", new ChangeAnimation(animator, "Death")));
+        deathSQ.AddChild(new Leaf("Death", new Death(gameObject, hurtCollider, 0.5f)));
         NameSelector.AddChild(deathSQ);
 
         Sequence walkToPlayerSQ = new Sequence("Move", 10);
+        //walkToPlayerSQ.AddChild(new Leaf("IsPlayerReachable?", new Condition(IsPlayerReachable)));
         walkToPlayerSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
         walkToPlayerSQ.AddChild(new Leaf("IsPlayerInRange?", new Condition(IsPlayerInRange)));
         walkToPlayerSQ.AddChild(new Leaf("MoveToPlayer", new MoveToTarget(transform, player.transform, moveSpeed, 2f)));
+        walkToPlayerSQ.AddChild(new Leaf("Walk", new ChangeAnimation(animator, "Walk")));
         NameSelector.AddChild(walkToPlayerSQ);
 
         Sequence patrolSQ = new Sequence("Patrol", 5);
         patrolSQ.AddChild(new Leaf("IsSafeToMove?", new Condition(IsSafeToMove)));
         patrolSQ.AddChild(new Leaf("PatrolMove", new Patrol(transform, 8f, moveSpeed)));
+        patrolSQ.AddChild(new Leaf("Death", new ChangeAnimation(animator, "Walk")));
         NameSelector.AddChild(patrolSQ);
+
+        //Sequence turnSQ = new Sequence("Turn", 11);
+        //turnSQ.AddChild(new Leaf("IsntSafeToMove?", new Condition(IsntSafeToMove)));
+        //turnSQ.AddChild(new Leaf("TurnFromCliff", new TurnFromCliff(transform)));
+        //NameSelector.AddChild(turnSQ);
 
         Sequence idleSQ = new Sequence("Idle", 1);
         idleSQ.AddChild(new Leaf("IsCliff?", new Condition(() => !IsSafeToMove())));
+        idleSQ.AddChild(new Leaf("Idle", new ChangeAnimation(animator, "Idle")));
         idleSQ.AddChild(new Leaf("Idle", new Idle(transform)));
 
         tree.AddChild(NameSelector);
@@ -73,7 +81,6 @@ public class TestEnemyName : MonoBehaviour
     #region Condition Checker
     private bool IsSafeToMove()
     {
-
         float directionX = (Mathf.Abs(transform.localEulerAngles.y - 180f) < 0.1f) ? 1f : -1f;
 
 

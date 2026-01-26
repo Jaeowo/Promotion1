@@ -112,6 +112,7 @@ public class PlayerController : ValidatedMonoBehaviour
 
         At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded && Mathf.Abs(input.Direction.x) > 0.01f));
 
+        // 무적상태가 아니면 어느 상태에서든 데미지 입는 상태로 변경하도록 수정하기
         Any(deathState, new FuncPredicate(() => isDeath == true));
         Any(idleState, new FuncPredicate(ReturnToIdleState));
   

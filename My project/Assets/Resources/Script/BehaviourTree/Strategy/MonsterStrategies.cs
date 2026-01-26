@@ -24,21 +24,27 @@ public class MoveToTarget : IStrategy
         float distanceX = Mathf.Abs(entity.position.x - target.position.x);
         float distanceY = Mathf.Abs(entity.position.y - target.position.y);
 
-        float directionX = target.position.x - entity.position.x;
+        //float directionX = target.position.x - entity.position.x;
 
         if (distanceY >= 1.5f)
         {
             return Node.EStatus.Failure;
         }
 
-        if (directionX <= 0)
+        float directionX = target.position.x - entity.position.x;
+
+        Vector3 scale = entity.localScale;
+
+        if (directionX > 0f)
         {
-            entity.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            scale.x = Mathf.Abs(scale.x);
         }
-        else
+        else if (directionX < 0f)
         {
-            entity.localRotation = Quaternion.Euler(0f, 180f, 0f);
-        } 
+            scale.x = -Mathf.Abs(scale.x);
+        }
+
+        entity.localScale = scale;
 
         if (distanceX < stoppingDistance)
         {
@@ -148,6 +154,28 @@ public class Death : IStrategy
         hurtCollider.SetActive(false);
         Object.Destroy(owner, deathTime);
         return Node.EStatus.Running;
+    }
+}
+
+public class TurnFromCliff : IStrategy
+{
+    readonly Transform entity;
+
+    public TurnFromCliff(Transform entity)
+    {
+        this.entity = entity;
+    }
+
+    public Node.EStatus Process()
+    {
+        float y = entity.localEulerAngles.y;
+
+        if (y < 90f)
+            entity.localRotation = Quaternion.Euler(0f, 180f, 0f);
+        else
+            entity.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        return Node.EStatus.Success;
     }
 }
 

@@ -19,6 +19,8 @@ public abstract class BaseStat : MonoBehaviour
     [Header("Bool Set")]
     [SerializeField] protected bool isInvincible = false;
 
+    public bool HitTriggered { get; private set; }
+
     // Event
     public event Action<float, float> OnHPChanged;
 

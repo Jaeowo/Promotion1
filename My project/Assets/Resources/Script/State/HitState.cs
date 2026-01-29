@@ -8,6 +8,7 @@ public class HitState : PlayerBaseState
     {
         Debug.Log("HitState Enter");
         animator.CrossFade(HitHash, crossFadeDuration);
+        player.EnterHit();
     }
 
     public override void FixedUpdate()

@@ -360,7 +360,16 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Head (Final)-Laser Loop_0: 2825070638903338175
+      Head (Final)-Laser Loop_1: -4979719022416306244
+      Head (Final)-Laser Loop_2: -5574461247805297261
+      Head (Final)-Laser Loop_3: -5072607608457925360
+      Head (Final)-Laser Loop_4: 2408988403355840743
+      Head (Final)-Laser Loop_5: -4509418905449409465
+      Head (Final)-Laser Loop_6: 4312404460656247863
+      Head (Final)-Laser Loop_7: -7109531334728399404
+      Head (Final)-Laser Loop_8: 3472331153326696493
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

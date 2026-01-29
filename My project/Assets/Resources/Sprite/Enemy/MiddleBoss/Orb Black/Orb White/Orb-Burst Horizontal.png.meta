@@ -210,7 +210,10 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Orb-Burst Horizontal_0: -8959142745302225283
+      Orb-Burst Horizontal_1: 3721061896470003079
+      Orb-Burst Horizontal_2: 9142730018518651572
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

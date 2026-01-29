@@ -785,7 +785,33 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Head (Final)-Idle_0: 988214922121638640
+      Head (Final)-Idle_1: 8026320970160594326
+      Head (Final)-Idle_10: -4508590862551510735
+      Head (Final)-Idle_11: 3908886984800072491
+      Head (Final)-Idle_12: 6016141434091572300
+      Head (Final)-Idle_13: 4469331137134183834
+      Head (Final)-Idle_14: 7875916664417622936
+      Head (Final)-Idle_15: 8210258091722145660
+      Head (Final)-Idle_16: -1672209645666915437
+      Head (Final)-Idle_17: -7747887228418712300
+      Head (Final)-Idle_18: -6447881506330355087
+      Head (Final)-Idle_19: 2265811249420589219
+      Head (Final)-Idle_2: 8398846422632050268
+      Head (Final)-Idle_20: -6643547597430308888
+      Head (Final)-Idle_21: -6113560880587444586
+      Head (Final)-Idle_22: -9149952454425877906
+      Head (Final)-Idle_23: 4128267826436970791
+      Head (Final)-Idle_24: -7637650321389337980
+      Head (Final)-Idle_25: -2108835895678434691
+      Head (Final)-Idle_3: 8908935181463848651
+      Head (Final)-Idle_4: -5729583637087826244
+      Head (Final)-Idle_5: 1076513928891400424
+      Head (Final)-Idle_6: -5542777142324858869
+      Head (Final)-Idle_7: -8178220635116586791
+      Head (Final)-Idle_8: 4463083938850520129
+      Head (Final)-Idle_9: 935590625606886025
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

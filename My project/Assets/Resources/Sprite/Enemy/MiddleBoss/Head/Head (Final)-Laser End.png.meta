@@ -410,7 +410,18 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Head (Final)-Laser End_0: 1180255734554325091
+      Head (Final)-Laser End_1: 747919529332705552
+      Head (Final)-Laser End_10: -7533264597506806134
+      Head (Final)-Laser End_2: 2499421333805825452
+      Head (Final)-Laser End_3: 7886896874384982025
+      Head (Final)-Laser End_4: 43725456632064056
+      Head (Final)-Laser End_5: 3097850748574170673
+      Head (Final)-Laser End_6: 7523967634854294102
+      Head (Final)-Laser End_7: -8497448214527699146
+      Head (Final)-Laser End_8: -6265571213472117586
+      Head (Final)-Laser End_9: 456725213412560932
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

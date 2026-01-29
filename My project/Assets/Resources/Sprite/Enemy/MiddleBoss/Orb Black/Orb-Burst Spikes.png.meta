@@ -410,7 +410,18 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Orb-Burst Spikes_0: 3598380287348156374
+      Orb-Burst Spikes_1: -6361748304512008477
+      Orb-Burst Spikes_10: 5848667283597681347
+      Orb-Burst Spikes_2: 4932678071972315416
+      Orb-Burst Spikes_3: 4305885318231719852
+      Orb-Burst Spikes_4: -4894920263794681449
+      Orb-Burst Spikes_5: 5811641857199008130
+      Orb-Burst Spikes_6: 1258152413051519854
+      Orb-Burst Spikes_7: -152347748600356068
+      Orb-Burst Spikes_8: 114871950821633298
+      Orb-Burst Spikes_9: 1596956577912344194
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

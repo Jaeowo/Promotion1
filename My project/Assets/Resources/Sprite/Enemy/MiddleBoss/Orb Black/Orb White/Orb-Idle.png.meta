@@ -385,7 +385,17 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Orb-Idle_0: 3209239795389205609
+      Orb-Idle_1: -7970465732189622670
+      Orb-Idle_2: 6026599087898995252
+      Orb-Idle_3: 1184559408339495733
+      Orb-Idle_4: 1871044165686231045
+      Orb-Idle_5: -3760046024759876017
+      Orb-Idle_6: 1595686928366238529
+      Orb-Idle_7: -1699914346803935684
+      Orb-Idle_8: 2715759024021635242
+      Orb-Idle_9: -2595011852394262887
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

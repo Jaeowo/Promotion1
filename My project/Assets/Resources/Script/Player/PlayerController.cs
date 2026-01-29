@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 public class PlayerController : ValidatedMonoBehaviour
 {
@@ -38,6 +39,8 @@ public class PlayerController : ValidatedMonoBehaviour
 
     [Header("Hit Settings")]
     [SerializeField] private float hitDuration = 0.2f;
+    [SerializeField] private float invicibleDuration = 2.0f;
+    [SerializeField] private bool hitTriggered = false;
 
     private const float ZeroF = 0f;
 
@@ -58,6 +61,7 @@ public class PlayerController : ValidatedMonoBehaviour
     {
         SetUpTimer();
         SetUpStateMachine();
+        SetUpEvent();
     }
 
     private void Start() => input.EnablePlayerActions();
@@ -70,7 +74,8 @@ public class PlayerController : ValidatedMonoBehaviour
         CheckDeath();
         HandleTimers();
 
-        if(Input.GetKeyDown(KeyCode.F))
+        // Tester
+        if (Input.GetKeyDown(KeyCode.F))
         {
             stats.DecreaseCurrentHP(200);
         }
@@ -113,7 +118,9 @@ public class PlayerController : ValidatedMonoBehaviour
         At(idleState, runState, new FuncPredicate(() => groundChecker.IsGrounded && Mathf.Abs(input.Direction.x) > 0.01f));
 
         // 무적상태가 아니면 어느 상태에서든 데미지 입는 상태로 변경하도록 수정하기
+        //            OnHit?.Invoke();
         Any(deathState, new FuncPredicate(() => isDeath == true));
+        Any(hitState, new FuncPredicate(() => hitTriggered == true));
         Any(idleState, new FuncPredicate(ReturnToIdleState));
   
         // 초기 상태
@@ -147,17 +154,20 @@ public class PlayerController : ValidatedMonoBehaviour
     CountdownTimer slashTimer;
 
     StopwatchTimer idleBreakTimer;
-    StopwatchTimer invincibleTimer;
+
+    CountdownTimer invincibleTimer;
+    CountdownTimer hitTimer;
 
     private void SetUpTimer()
     {
         SetUpIdleBreakTimer();
+        SetUpInvicibleTimer();
+        SetUpHitTimer();
         SetUpJumpTimer();
         SetUpDashTiemr();
         SetUpSlashTiemr();
-        SetUpInvincibleTimer();
 
-        timers = new(7) { jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, slashTimer, idleBreakTimer, invincibleTimer };
+        timers = new(8) { hitTimer, jumpTimer, jumpCooldownTimer, dashTimer, dashCooldownTimer, slashTimer, idleBreakTimer, invincibleTimer };
     }
 
     private void HandleTimers()
@@ -166,6 +176,17 @@ public class PlayerController : ValidatedMonoBehaviour
         {
             timer.Tick(Time.deltaTime);
         }
+    }
+
+    private void SetUpInvicibleTimer()
+    {
+        invincibleTimer = new CountdownTimer(invicibleDuration);
+        invincibleTimer.OnTimerStop += () => SetInvincible(false);
+    }
+
+    private void SetUpHitTimer()
+    {
+        hitTimer = new CountdownTimer(hitDuration);
     }
 
     private void SetUpIdleBreakTimer()
@@ -205,11 +226,6 @@ public class PlayerController : ValidatedMonoBehaviour
 
             dashCooldownTimer.Start();
         };
-    }
-
-    private void SetUpInvincibleTimer()
-    {
-        invincibleTimer = new StopwatchTimer();
     }
 
     #endregion
@@ -373,6 +389,16 @@ public class PlayerController : ValidatedMonoBehaviour
         idleBreakTimer.Start();
     }
 
+    public void EnterHit()
+    {
+        hitTimer.Reset();
+        hitTimer.Start();
+        invincibleTimer.Reset();
+        invincibleTimer.Start();
+        ClearTriggers();
+        SetInvincible(true);
+    }
+
     #endregion
 
     #region ON EXIT
@@ -399,6 +425,29 @@ public class PlayerController : ValidatedMonoBehaviour
     public void LockPlayerDicrection(bool lockDirection)
     {
         this.lockDirection = lockDirection;
+    }
+
+    public void SetInvincible(bool isInvincible)
+    {
+        stats.ChangeInvencible(isInvincible);
+    }
+
+    public void TriggerHit()
+    {
+        hitTriggered = true;
+    }
+
+    public void ClearTriggers()
+    {
+        hitTriggered = false;
+    }
+
+    private void SetUpEvent()
+    {
+        stats.OnHit += () =>
+        {
+            TriggerHit();
+        };
     }
 
     #endregion

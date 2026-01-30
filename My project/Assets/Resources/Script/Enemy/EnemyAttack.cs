@@ -1,14 +1,14 @@
 using UnityEngine;
 
-public class SlashColliderAttack : MonoBehaviour
+public class EnemyAttack : MonoBehaviour
 {
-    [SerializeField] private BaseStat playerStat;
+    [SerializeField] private BaseStat attackerStat;
 
     private void Start()
     {
-        if (!playerStat)
+        if(!attackerStat)
         {
-            playerStat = GetComponentInParent<BaseStat>();
+            attackerStat = GetComponentInParent<BaseStat>();
         }
     }
 
@@ -16,9 +16,9 @@ public class SlashColliderAttack : MonoBehaviour
     {
         if (collision.TryGetComponent<BaseStat>(out var targetStat))
         {
-            if (targetStat != playerStat)
+            if (targetStat != attackerStat)
             {
-                int damage = Calculator.ExecuteAttack(playerStat, targetStat);
+                int damage = Calculator.ExecuteAttack(attackerStat, targetStat);
                 targetStat.TakeDamage(damage);
                 UIInitManager.instance.InitDamageText(targetStat.transform.position, damage);
                 Debug.Log(damage);

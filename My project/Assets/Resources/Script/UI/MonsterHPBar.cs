@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class HPBar : MonoBehaviour
+public class MonsterHPBar : MonoBehaviour
 {
     //[SerializeField] Vector3 pivot;
     [SerializeField] Transform fill;
@@ -15,9 +15,9 @@ public class HPBar : MonoBehaviour
 
         if (parent.TryGetComponent<BaseStat>(out targetStat))
         {
-            //targetStat.MaxHP
+            targetStat.OnHPChanged += UpdateHPBar;
         }
-        targetStat.OnHPChanged += UpdateHPBar;
+  
     }
 
     private void UpdateHPBar(float currentHP, float maxHP)

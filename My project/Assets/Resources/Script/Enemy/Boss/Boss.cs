@@ -8,8 +8,11 @@ public class Boss : MonoBehaviour
     [SerializeField, Child] Animator animator;
 
     [SerializeField] private float wanderRadius = 10f;
+    [SerializeField] private float timeBetweenAttacks = 1f;
 
     StateMachine stateMachine;
+
+    CountdownTimer attackTimer;
 
     private void OnValidate() => this.ValidateRefs();
 
@@ -17,6 +20,8 @@ public class Boss : MonoBehaviour
 
     private void Start()
     {
+        attackTimer = new CountdownTimer(timeBetweenAttacks);
+
         stateMachine = new StateMachine();
 
         var idleState = new BossIdleState(this, animator, 5.0f);
